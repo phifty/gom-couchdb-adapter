@@ -8,10 +8,6 @@ module GOM
       # The couchdb storage adapter
       class Adapter < GOM::Storage::Adapter
 
-        def initialize(configuration)
-          super configuration
-        end
-
         def fetch(id)
 
         end
