@@ -1,0 +1,3 @@
+
+test_storage:
+  adapter: couchdb
