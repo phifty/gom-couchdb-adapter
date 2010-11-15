@@ -3,6 +3,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "li
 
 describe Transport::JSON do
 
+  use_real_transport!
+
   describe "request" do
 
     before :each do
