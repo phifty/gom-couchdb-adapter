@@ -43,6 +43,10 @@ module CouchDB
       self["_rev"] = value
     end
 
+    def each_property(&block)
+      @properties.each &block
+    end
+
     def ==(other)
       self.id == other.id
     end
@@ -73,8 +77,8 @@ module CouchDB
 
     def destroy
       return false if new?
-      Transport::JSON.request :delete, self.url, :headers => { "If-Match" => self.rev }, :expected_status_code => 200
-      clear_rev
+      Transport::JSON.request :delete, url, :headers => { "If-Match" => self.rev }, :expected_status_code => 200
+      self.rev = nil
       true
     rescue Transport::UnexpectedStatusCodeError => error
       upgrade_unexpected_status_error error
@@ -87,24 +91,16 @@ module CouchDB
     private
 
     def create
-      response = Transport::JSON.request :post, self.database.url, :body => @properties, :expected_status_code => 201
+      response = Transport::JSON.request :post, @database.url, :body => @properties, :expected_status_code => 201
       self.id  = response["id"]
       self.rev = response["rev"]
       true
-    rescue Transport::UnexpectedStatusCodeError
-      false
     end
 
     def update
-      response = Transport::JSON.request :put, self.url, :body => @properties, :expected_status_code => 201
+      response = Transport::JSON.request :put, url, :body => @properties, :expected_status_code => 201
       self.rev = response["rev"]
       true
-    rescue Transport::UnexpectedStatusCodeError
-      false
-    end
-
-    def clear_rev
-      self.rev = nil
     end
 
     def upgrade_unexpected_status_error(error)
@@ -115,12 +111,6 @@ module CouchDB
     def self.create(*arguments)
       model = new *arguments
       model.save ? model : nil
-    end
-
-    def self.destroy_all
-      all.each do |model|
-        model.destroy
-      end
     end
 
   end

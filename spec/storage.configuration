@@ -1,3 +1,5 @@
 
 test_storage:
   adapter: couchdb
+  database: test
+  create_database_if_missing: true

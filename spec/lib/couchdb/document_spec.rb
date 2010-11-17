@@ -64,6 +64,17 @@ describe CouchDB::Document do
 
   end
 
+  describe "each_property" do
+
+    it "should call the given block for each property" do
+      @document["test"] = "test value"
+      result = nil
+      @document.each_property{ |key, value| result = [ key, value ] }
+      result.should == [ "test", "test value" ]
+    end
+
+  end
+
   describe "==" do
 
     it "should be true if the id's of the models are equal" do
@@ -275,15 +286,6 @@ describe CouchDB::Document do
         @document.should be_new
       end
 
-    end
-
-  end
-
-  describe "all" do
-
-    it "should return a collection for the class view" do
-      pending
-      CouchDB::Document.all.should be_instance_of(CouchModel::Collection)
     end
 
   end

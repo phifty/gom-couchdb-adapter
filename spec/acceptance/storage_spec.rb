@@ -19,22 +19,28 @@ describe "storage" do
     before :each do
       GOM::Storage.store @object, :test_storage
       @id = GOM::Object.id(@object)
+
+      @object = GOM::Storage.fetch @id
     end
 
     after :each do
       GOM::Storage.remove @object
     end
 
-    it "should return the correct object" do
-      object = GOM::Storage.fetch @id
-      object.should be_instance_of(Object)
-      object.instance_variable_get(:@number).should == 11
-      GOM::Object.id(object).should == @id
+    it "should return an object of the correct class" do
+      @object.class.should == Object
+    end
+
+    it "should set the object's instance variables" do
+      @object.instance_variable_get(:@number).should == 11
+    end
+
+    it "should assign an object id" do
+      GOM::Object.id(@object).should == @id
     end
 
     it "should also fetch the related object" do
-      object = GOM::Storage.fetch @id
-      related_object = object.instance_variable_get :@related_object
+      related_object = @object.instance_variable_get :@related_object
       related_object.should be_instance_of(GOM::Object::Proxy)
       related_object.object.should == @related_object
       related_object.object.instance_variable_get(:@number).should == 16
@@ -56,8 +62,8 @@ describe "storage" do
     end
 
     it "should set the object's id" do
-      GOM::Storage.store @object, "test_storage"
-      GOM::Object.id(@object).should =~ /^test_storage:object_\d$/
+      GOM::Storage.store @object, :test_storage
+      GOM::Object.id(@object).should =~ /^test_storage:.+$/
     end
 
     it "should store the related object" do
