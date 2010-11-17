@@ -22,37 +22,26 @@ describe GOM::Storage::CouchDB::Adapter do
   describe "fetch" do
 
     before :each do
-      @document = mock CouchDB::Document, :id= => nil, :load => true
-      @document.stub(:each_property).and_yield("test", "test value")
-      CouchDB::Document.stub(:new).and_return(@document)
+      @id = "test_object_1"
+      @revisions = @adapter.send :revisions
+      @object_hash = mock Hash
+
+      @fetcher = mock GOM::Storage::CouchDB::Fetcher, :perform => nil, :object_hash => @object_hash
+      GOM::Storage::CouchDB::Fetcher.stub(:new).and_return(@fetcher)
     end
 
-    it "should initialize a document" do
-      CouchDB::Document.should_receive(:new).with(@database).and_return(@document)
-      @adapter.fetch "test_object_1"
+    it "should initialize the fetcher" do
+      GOM::Storage::CouchDB::Fetcher.should_receive(:new).with(@database, @id, @revisions).and_return(@fetcher)
+      @adapter.fetch @id
     end
 
-    it "should set the id" do
-      @document.should_receive(:id=).with("test_object_1")
-      @adapter.fetch "test_object_1"
+    it "should perform a fetch" do
+      @fetcher.should_receive(:perform)
+      @adapter.fetch @id
     end
 
-    it "should load the document" do
-      @document.should_receive(:load).and_return(true)
-      @adapter.fetch "test_object_1"
-    end
-
-    it "should transfer each property" do
-      @document.should_receive(:each_property)
-      @adapter.fetch "test_object_1"
-    end
-
-    it "should return the correct object hash" do
-      object_hash = @adapter.fetch "test_object_1"
-      object_hash.should == {
-        :id => "test_object_1",
-        :properties => { :test => "test value" }
-      }
+    it "should return the object_hash" do
+      @adapter.fetch(@id).should == @object_hash
     end
 
   end

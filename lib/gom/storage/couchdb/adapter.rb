@@ -12,30 +12,9 @@ module GOM
       class Adapter < GOM::Storage::Adapter
 
         def fetch(id)
-          document = ::CouchDB::Document.new database
-          document.id = id
-          document.load
-
-          @revisions ||= { }
-          @revisions[id] = document.rev
-
-          object_hash = { :id => id, :class => document["model_class"] }
-          document.each_property do |key, value|
-            if key != "_id" && key != "_rev" && key != "model_class"
-              if key =~ /_id$/
-                name = key.sub /_id$/, ""
-                id = GOM::Object::Id.new value
-                object_hash[:relations] ||= { }
-                object_hash[:relations][name.to_sym] = GOM::Object::Proxy.new id
-              else
-                object_hash[:properties] ||= { }
-                object_hash[:properties][key.to_sym] = value
-              end
-            end
-          end
-          (object_hash[:properties] || object_hash[:relations]) ? object_hash : nil
-        rescue ::CouchDB::Document::NotFoundError
-          nil
+          fetcher = Fetcher.new database, id, revisions
+          fetcher.perform
+          fetcher.object_hash
         end
 
         def store(object_hash)
@@ -81,6 +60,10 @@ module GOM
 
         def server
           @server ||= ::CouchDB::Server.new *[ configuration[:host], configuration[:port] ].compact
+        end
+
+        def revisions
+          @revisions ||= { }
         end
 
       end
