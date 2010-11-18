@@ -24,11 +24,8 @@ module GOM
         end
 
         def remove(id)
-          @revisions ||= { }
-          document = ::CouchDB::Document.new database
-          document.id = id
-          document.rev = @revisions[id]
-          document.destroy
+          remover = Remover.new database, id, revisions
+          remover.perform
         end
 
         private

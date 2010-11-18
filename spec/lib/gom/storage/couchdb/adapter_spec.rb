@@ -75,23 +75,21 @@ describe GOM::Storage::CouchDB::Adapter do
   describe "remove" do
 
     before :each do
-      @document = mock CouchDB::Document, :id= => nil, :destroy => true
-      CouchDB::Document.stub(:new).and_return(@document)
+      @id = "test_object_1"
+      @revisions = @adapter.send :revisions
+
+      @remover = mock GOM::Storage::CouchDB::Remover, :perform => nil
+      GOM::Storage::CouchDB::Remover.stub(:new).and_return(@remover)
     end
 
-    it "should initialize a document" do
-      CouchDB::Document.should_receive(:new).with(@database).and_return(@document)
-      @adapter.remove "test_object_1"
+    it "should initialize the remover" do
+      GOM::Storage::CouchDB::Remover.should_receive(:new).with(@database, @id, @revisions).and_return(@remover)
+      @adapter.remove @id
     end
 
-    it "should set the id" do
-      @document.should_receive(:id=).with("test_object_1")
-      @adapter.remove "test_object_1"
-    end
-
-    it "should destroy the document" do
-      @document.should_receive(:destroy)
-      @adapter.remove "test_object_1"
+    it "should perform a fetch" do
+      @remover.should_receive(:perform)
+      @adapter.remove @id
     end
 
   end
