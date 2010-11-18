@@ -7,7 +7,7 @@ describe GOM::Storage::CouchDB::Fetcher do
     @id = "test_object_1"
     @revisions = mock Hash, :[]= => nil
 
-    @fetcher = GOM::Storage::CouchDB::Fetcher.new @database, @id, @revisions
+    @fetcher = described_class.new @database, @id, @revisions
   end
 
   describe "perform" do

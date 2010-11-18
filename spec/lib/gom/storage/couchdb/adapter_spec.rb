@@ -9,8 +9,7 @@ describe GOM::Storage::CouchDB::Adapter do
     @database = mock CouchDB::Database
     CouchDB::Database.stub(:new).and_return(@database)
 
-    @configuration = mock GOM::Storage::Configuration, :name => "test_storage"
-    @configuration.stub(:[])
+    @configuration = mock GOM::Storage::Configuration, :name => "test_storage", :[] => nil
 
     @adapter = GOM::Storage::CouchDB::Adapter.new @configuration
   end
@@ -49,79 +48,26 @@ describe GOM::Storage::CouchDB::Adapter do
   describe "store" do
 
     before :each do
-      @document = mock CouchDB::Document, :[]= => nil, :id= => nil, :save => true, :id => "test_object_1"
-      CouchDB::Document.stub(:new).and_return(@document)
+      @object_hash = mock Hash
+      @revisions = @adapter.send :revisions
+      @id = "test_object_1"
 
-      @object_hash = { :id => "test_object_1" }
+      @saver = mock GOM::Storage::CouchDB::Saver, :perform => nil, :id => @id
+      GOM::Storage::CouchDB::Saver.stub(:new).and_return(@saver)
     end
 
-    it "should initialize a document" do
-      CouchDB::Document.should_receive(:new).with(@database).and_return(@document)
+    it "should initialize the saver" do
+      GOM::Storage::CouchDB::Saver.should_receive(:new).with(@database, @object_hash, @revisions, "test_storage").and_return(@saver)
       @adapter.store @object_hash
     end
 
-    context "object hash with properties" do
-
-      before :each do
-        @object_hash.merge! :properties => { :test => "test value" }
-      end
-
-      it "should set the properties" do
-        @document.should_receive(:[]=).with("test", "test value")
-        @adapter.store @object_hash
-      end
-
-    end
-
-    context "object hash with relations" do
-
-      before :each do
-        @related_object = Object.new
-        @related_object_id = mock GOM::Object::Id, :to_s => "test_storage:test_object_2"
-        @related_object_proxy = mock GOM::Object::Proxy, :id => @related_object_id
-
-        GOM::Storage.stub(:store)
-        GOM::Object.stub(:id).and_return(@related_object_id)
-
-        @object_hash.merge! :relations => { :related_object => @related_object_proxy }
-      end
-
-      it "should set the relations" do
-        @document.should_receive(:[]=).with("related_object_id", "test_storage:test_object_2")
-        @adapter.store @object_hash
-      end
-
-      it "should store the related object if it hasn't an id" do
-        GOM::Storage.should_receive(:store).with(@related_object, "test_storage")
-        GOM::Object.should_receive(:id).with(@related_object).and_return(@related_object_id)
-
-        @related_object_proxy.stub(:id).and_return(nil)
-        @related_object_proxy.stub(:object).and_return(@related_object)
-
-        @adapter.store @object_hash
-      end
-
-    end
-
-    it "should set the id" do
-      @document.should_receive(:id=).with("test_object_1")
+    it "should perform a fetch" do
+      @saver.should_receive(:perform)
       @adapter.store @object_hash
     end
 
-    it "should not set the id if not included in the object hash" do
-      @document.should_not_receive(:id=)
-      @object_hash.delete :id
-      @adapter.store @object_hash
-    end
-
-    it "should save the document" do
-      @document.should_receive(:save).and_return(true)
-      @adapter.store @object_hash
-    end
-
-    it "should return the (new) object id" do
-      result = @adapter.store @object_hash
-      result.should == "test_object_1"
+    it "should return the object_hash" do
+      @adapter.store(@object_hash).should == @id
     end
 
   end

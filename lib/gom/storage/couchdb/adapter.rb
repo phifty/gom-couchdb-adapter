@@ -18,26 +18,9 @@ module GOM
         end
 
         def store(object_hash)
-          document = ::CouchDB::Document.new database
-          (object_hash[:properties] || { }).each do |key, value|
-            document[key.to_s] = value
-          end
-          (object_hash[:relations] || { }).each do |key, object_proxy|
-            document["#{key}_id"] = if object_proxy.id
-                                      object_proxy.id.to_s
-                                    else
-                                      GOM::Storage.store object_proxy.object, configuration.name
-                                      GOM::Object.id object_proxy.object
-                                    end
-          end
-          document.id = object_hash[:id] if object_hash.has_key?(:id)
-          document["model_class"] = object_hash[:class]
-          document.save
-
-          @revisions ||= { }
-          @revisions[document.id] = document.rev
-
-          document.id
+          saver = Saver.new database, object_hash, revisions, configuration.name
+          saver.perform
+          saver.id
         end
 
         def remove(id)
