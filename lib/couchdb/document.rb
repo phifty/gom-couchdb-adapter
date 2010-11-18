@@ -95,12 +95,16 @@ module CouchDB
       self.id  = response["id"]
       self.rev = response["rev"]
       true
+    rescue Transport::UnexpectedStatusCodeError
+      false
     end
 
     def update
       response = Transport::JSON.request :put, url, :body => @properties, :expected_status_code => 201
       self.rev = response["rev"]
       true
+    rescue Transport::UnexpectedStatusCodeError
+      false    
     end
 
     def upgrade_unexpected_status_error(error)
