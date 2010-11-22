@@ -38,11 +38,12 @@ module GOM
 
         def set_relations
           (@object_hash[:relations] || { }).each do |key, object_proxy|
-            @document["#{key}_id"] = if object_proxy.id
-                                       object_proxy.id.to_s
+            id, object = object_proxy.id, object_proxy.object
+            @document["#{key}_id"] = if id
+                                       id.to_s
                                      else
-                                       GOM::Storage.store object_proxy.object, @relation_storage_name
-                                       GOM::Object.id object_proxy.object
+                                       GOM::Storage.store object, @relation_storage_name
+                                       GOM::Object.id object
                                      end
           end
         end

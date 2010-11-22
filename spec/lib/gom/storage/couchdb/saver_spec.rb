@@ -41,7 +41,7 @@ describe GOM::Storage::CouchDB::Saver do
       before :each do
         @related_object = Object.new
         @related_object_id = mock GOM::Object::Id, :to_s => "test_storage:test_object_2"
-        @related_object_proxy = mock GOM::Object::Proxy, :id => @related_object_id
+        @related_object_proxy = mock GOM::Object::Proxy, :id => @related_object_id, :object => @related_object
 
         GOM::Storage.stub(:store)
         GOM::Object.stub(:id).and_return(@related_object_id)

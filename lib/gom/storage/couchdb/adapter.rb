@@ -32,14 +32,15 @@ module GOM
 
         def database
           @database ||= begin
-            database = ::CouchDB::Database.new *[ server, configuration[:database] ].compact
-            database.create_if_missing! if configuration[:create_database_if_missing]
+            database, create_database_if_missing = configuration.values_at :database, :create_database_if_missing
+            database = ::CouchDB::Database.new *[ server, database ].compact
+            database.create_if_missing! if create_database_if_missing
             database
           end
         end
 
         def server
-          @server ||= ::CouchDB::Server.new *[ configuration[:host], configuration[:port] ].compact
+          @server ||= ::CouchDB::Server.new *configuration.values_at(:host, :port).compact
         end
 
         def revisions

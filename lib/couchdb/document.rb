@@ -104,7 +104,7 @@ module CouchDB
       self.rev = response["rev"]
       true
     rescue Transport::UnexpectedStatusCodeError
-      false    
+      false
     end
 
     def upgrade_unexpected_status_error(error)

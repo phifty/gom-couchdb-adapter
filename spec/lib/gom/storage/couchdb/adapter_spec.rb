@@ -6,10 +6,16 @@ describe GOM::Storage::CouchDB::Adapter do
     @server = mock CouchDB::Server
     CouchDB::Server.stub(:new).and_return(@server)
 
-    @database = mock CouchDB::Database
+    @database = mock CouchDB::Database, :create_if_missing! => nil
     CouchDB::Database.stub(:new).and_return(@database)
 
     @configuration = mock GOM::Storage::Configuration, :name => "test_storage", :[] => nil
+    @configuration.stub(:values_at) do |*arguments|
+      result = nil
+      result = [ "test", true ] if arguments == [ :database, :create_database_if_missing ]
+      result = [ "host", 1234 ] if arguments == [ :host, :port ]
+      result
+    end
 
     @adapter = GOM::Storage::CouchDB::Adapter.new @configuration
   end
