@@ -1,5 +1,7 @@
 
-= General Object Mapper
+= General Object Mapper - CouchDB adapter
+
+The CouchDB adapter for the General Object Mapper provides an easy way store object data on a CouchDB server.
 
 == Development
 
