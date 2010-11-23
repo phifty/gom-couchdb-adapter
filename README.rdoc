@@ -1,8 +1,85 @@
 
-= General Object Mapper - CouchDB adapter
+= Generic Object Mapper - CouchDB adapter
 
-The CouchDB adapter for the General Object Mapper provides an easy way store object data on a CouchDB server.
+The CouchDB adapter for the Generic Object Mapper (http://github.com/phifty/gom) provides an easy way store and fetch
+object data to/from a CouchDB server. Object properties are mapped as well as object relations.
+
+== Configuration
+
+If the couchdb adapter is chosen in the storage configuration, the following configuration values should be specified.
+
+* <tt>host</tt> - Hostname where the CouchDB server is running on. Default is localhost.
+* <tt>port</tt> - Port where the CouchDB server is listening to. Default is 5984.
+* <tt>database</tt> - Name of the database that should be used.
+* <tt>create_database_if_missing</tt> - Can be true or false and specifies if a missing database should be created or
+  not. Default is false.
+
+=== Example
+
+  storage_name:
+    adapter: couchdb
+    host: another_host
+    database: production_db
+    create_database_if_missing: true
+
+== Documents
+
+Basically one document is created in the CouchDB database for each stored object. The instance variables from the
+object are stored as the document's keys and values. The objects relations to other objects are stored as references
+to the other object's document id. So if the following object is saved ...
+
+  class Book
+
+    attr_accessor :pages
+    attr_accessor :author
+
+  end
+
+  class Author
+
+    attr_accessor :name
+
+  end
+
+  author = Author.new
+  author.name = "Mr. Storyteller"
+
+  book = Book.new
+  book.pages = 1253
+  book.author = GOM::Object.reference author
+
+  GOM::Storage.store book, :storage_name
+
+... the following documents will occur in the database.
+
+  {
+    "_id": "book_1",
+    "_rev": "...",
+    "model_class": "Book",
+    "pages": 1253,
+    "author_id": "author_1"
+  }
+
+  {
+    "_id": "author_1",
+    "_rev": "...",
+    "model_class": "Author",
+    "name": "Mr. Storyteller"
+  }
+
+If the author would have been stored before and assigned to an id, it wouldn't be stored again.
+
+To get back the book from the storage, simply call ...
+
+  book = GOM::Storage.fetch "storage_name:book_1"
+
+... and an object of the class <tt>Book</tt> with same instance variable values as it had before, will be returned.
+Since lazy loading is supported, the author will just be fetched on the first access. So ...
+
+  author_name = book.author.name
+
+... will invoke another fetch of the author's object.
 
 == Development
 
-GOM is still in an early phase of development. Any bug report and contribution is welcome!
+This project is still experimental and under development. Any bug report and contribution is welcome!
