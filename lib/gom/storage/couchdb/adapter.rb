@@ -46,6 +46,7 @@ module GOM
         end
 
         def setup_database
+          @database.delete_if_exists! if configuration[:delete_database_if_exists]
           @database.create_if_missing! if configuration[:create_database_if_missing]
         end
 

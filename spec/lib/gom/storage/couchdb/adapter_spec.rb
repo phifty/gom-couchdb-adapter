@@ -6,7 +6,7 @@ describe GOM::Storage::CouchDB::Adapter do
     @server = mock CouchDB::Server
     CouchDB::Server.stub(:new).and_return(@server)
 
-    @database = mock CouchDB::Database, :create_if_missing! => nil
+    @database = mock CouchDB::Database, :delete_if_exists! => nil, :create_if_missing! => nil
     CouchDB::Database.stub(:new).and_return(@database)
 
     @configuration = mock GOM::Storage::Configuration, :name => "test_storage"
@@ -14,6 +14,8 @@ describe GOM::Storage::CouchDB::Adapter do
       case key
         when :database
           "test"
+        when :delete_database_if_exists
+          true
         when :create_database_if_missing
           true
       end
@@ -40,6 +42,11 @@ describe GOM::Storage::CouchDB::Adapter do
 
     it "should initialize a database" do
       CouchDB::Database.should_receive(:new).with(@server, "test").and_return(@database)
+      @adapter.setup
+    end
+
+    it "should delete the database if requested and existing" do
+      @database.should_receive(:delete_if_exists!)
       @adapter.setup
     end
 
