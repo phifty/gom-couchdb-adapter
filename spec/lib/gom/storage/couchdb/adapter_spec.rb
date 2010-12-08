@@ -10,19 +10,11 @@ describe GOM::Storage::CouchDB::Adapter do
     CouchDB::Database.stub(:new).and_return(@database)
 
     @configuration = mock GOM::Storage::Configuration, :name => "test_storage"
-    @configuration.stub(:[]) do |key|
-      case key
-        when :database
-          "test"
-        when :delete_database_if_exists
-          true
-        when :create_database_if_missing
-          true
-      end
-    end
+    @configuration.stub(:[]).with(:database).and_return("test")
     @configuration.stub(:values_at) do |*arguments|
       result = nil
       result = [ "host", 1234 ] if arguments == [ :host, :port ]
+      result = [ true, true ] if arguments == [ :delete_database_if_exists, :create_database_if_missing ]
       result
     end
 
