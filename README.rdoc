@@ -11,6 +11,8 @@ If the couchdb adapter is chosen in the storage configuration, the following con
 * <tt>host</tt> - Hostname where the CouchDB server is running on. Default is localhost.
 * <tt>port</tt> - Port where the CouchDB server is listening to. Default is 5984.
 * <tt>database</tt> - Name of the database that should be used.
+* <tt>delete_database_if_exists</tt> - Can be true or false and specifies if an existing database should be delete or
+  not. This can be useful in your test setup. Default is false.
 * <tt>create_database_if_missing</tt> - Can be true or false and specifies if a missing database should be created or
   not. Default is false.
 
@@ -20,6 +22,7 @@ If the couchdb adapter is chosen in the storage configuration, the following con
     adapter: couchdb
     host: another_host
     database: production_db
+    delete_database_if_exists: false
     create_database_if_missing: true
 
 == Documents
@@ -82,4 +85,7 @@ Since lazy loading is supported, the author will just be fetched on the first ac
 
 == Development
 
-This project is still experimental and under development. Any bug report and contribution is welcome!
+Development has been done test-driven and the code follows at most the Clean Code paradigms. Code smells has been
+removed by using the reek[http://github.com/kevinrutherford/reek] code smell detector.
+
+The project is still experimental and under development. Any bug report and contribution is welcome!
