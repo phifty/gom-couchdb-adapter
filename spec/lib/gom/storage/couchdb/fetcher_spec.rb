@@ -14,7 +14,7 @@ describe GOM::Storage::CouchDB::Fetcher do
 
     before :each do
       @document = mock CouchDB::Document, :id => "test_object_1", :id= => nil, :rev => 1, :[] => "Object", :load => true
-      @document.stub(:each_property).and_yield("test", "test value")
+      @document.stub(:each).and_yield("test", "test value")
       CouchDB::Document.stub(:new).and_return(@document)
     end
 
@@ -45,13 +45,12 @@ describe GOM::Storage::CouchDB::Fetcher do
     end
 
     it "should transfer each property" do
-      @document.stub(:each_property).and_yield("test", "test value")
       @fetcher.perform
       @fetcher.object_hash.should include(:properties => { :test => "test value" })
     end
 
     it "should transfer each relation" do
-      @document.stub(:each_property).and_yield("test_id", "test_storage:test_object_2")
+      @document.stub(:each).and_yield("test_id", "test_storage:test_object_2")
       @fetcher.perform
       @fetcher.object_hash[:relations][:test].should be_instance_of(GOM::Object::Proxy)
     end

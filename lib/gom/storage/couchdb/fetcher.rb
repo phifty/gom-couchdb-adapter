@@ -46,7 +46,7 @@ module GOM
         end
 
         def transfer_properties
-          @document.each_property do |key, value|
+          @document.each do |key, value|
             set_property key, value if property_key?(key)
             set_relation key, value if relation_key?(key)
           end

@@ -9,24 +9,52 @@ describe GOM::Storage::CouchDB::Adapter do
     @database = mock CouchDB::Database, :create_if_missing! => nil
     CouchDB::Database.stub(:new).and_return(@database)
 
-    @configuration = mock GOM::Storage::Configuration, :name => "test_storage", :[] => nil
+    @configuration = mock GOM::Storage::Configuration, :name => "test_storage"
+    @configuration.stub(:[]) do |key|
+      case key
+        when :database
+          "test"
+        when :create_database_if_missing
+          true
+      end
+    end
     @configuration.stub(:values_at) do |*arguments|
       result = nil
-      result = [ "test", true ] if arguments == [ :database, :create_database_if_missing ]
       result = [ "host", 1234 ] if arguments == [ :host, :port ]
       result
     end
 
-    @adapter = GOM::Storage::CouchDB::Adapter.new @configuration
+    @adapter = described_class.new @configuration
   end
 
   it "should register the adapter" do
     GOM::Storage::Adapter[:couchdb].should == GOM::Storage::CouchDB::Adapter
   end
 
+  describe "setup" do
+
+    it "should initialize a server" do
+      CouchDB::Server.should_receive(:new).with("host", 1234).and_return(@server)
+      @adapter.setup
+    end
+
+    it "should initialize a database" do
+      CouchDB::Database.should_receive(:new).with(@server, "test").and_return(@database)
+      @adapter.setup
+    end
+
+    it "should create the database if requested and missing" do
+      @database.should_receive(:create_if_missing!)
+      @adapter.setup
+    end
+
+  end
+
   describe "fetch" do
 
     before :each do
+      @adapter.setup
+
       @id = "test_object_1"
       @revisions = @adapter.send :revisions
       @object_hash = mock Hash
@@ -54,6 +82,8 @@ describe GOM::Storage::CouchDB::Adapter do
   describe "store" do
 
     before :each do
+      @adapter.setup
+
       @object_hash = mock Hash
       @revisions = @adapter.send :revisions
       @id = "test_object_1"
@@ -81,6 +111,8 @@ describe GOM::Storage::CouchDB::Adapter do
   describe "remove" do
 
     before :each do
+      @adapter.setup
+
       @id = "test_object_1"
       @revisions = @adapter.send :revisions
 
