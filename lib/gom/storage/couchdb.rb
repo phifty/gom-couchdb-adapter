@@ -9,6 +9,7 @@ module GOM
       autoload :Fetcher, File.join(File.dirname(__FILE__), "couchdb", "fetcher")
       autoload :Saver, File.join(File.dirname(__FILE__), "couchdb", "saver")
       autoload :Remover, File.join(File.dirname(__FILE__), "couchdb", "remover")
+      autoload :View, File.join(File.dirname(__FILE__), "couchdb", "view")
 
     end
 

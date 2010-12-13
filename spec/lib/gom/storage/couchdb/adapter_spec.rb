@@ -9,7 +9,7 @@ describe GOM::Storage::CouchDB::Adapter do
     @database = mock CouchDB::Database, :delete_if_exists! => nil, :create_if_missing! => nil
     CouchDB::Database.stub(:new).and_return(@database)
 
-    @configuration = mock GOM::Storage::Configuration, :name => "test_storage"
+    @configuration = mock GOM::Storage::Configuration, :name => "test_storage", :views => :test_views
     @configuration.stub(:[]).with(:database).and_return("test")
     @configuration.stub(:values_at) do |*arguments|
       result = nil
@@ -17,6 +17,9 @@ describe GOM::Storage::CouchDB::Adapter do
       result = [ true, true ] if arguments == [ :delete_database_if_exists, :create_database_if_missing ]
       result
     end
+
+    @pusher = mock GOM::Storage::CouchDB::View::Pusher, :perform => nil
+    GOM::Storage::CouchDB::View::Pusher.stub(:new).and_return(@pusher)
 
     @adapter = described_class.new @configuration
   end
@@ -44,6 +47,16 @@ describe GOM::Storage::CouchDB::Adapter do
 
     it "should create the database if requested and missing" do
       @database.should_receive(:create_if_missing!)
+      @adapter.setup
+    end
+
+    it "should initialize the view pusher" do
+      GOM::Storage::CouchDB::View::Pusher.should_receive(:new).with(@database, :test_views).and_return(@pusher)
+      @adapter.setup
+    end
+
+    it "should push the views" do
+      @pusher.should_receive(:perform)
       @adapter.setup
     end
 

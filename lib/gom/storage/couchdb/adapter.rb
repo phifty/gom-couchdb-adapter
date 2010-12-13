@@ -12,6 +12,7 @@ module GOM
           initialize_server
           initialize_database
           setup_database
+          push_views
         end
 
         def fetch(id)
@@ -49,6 +50,10 @@ module GOM
           delete_database_if_exists, create_database_if_missing = configuration.values_at :delete_database_if_exists, :create_database_if_missing
           @database.delete_if_exists! if delete_database_if_exists
           @database.create_if_missing! if create_database_if_missing
+        end
+
+        def push_views
+          View::Pusher.new(@database, configuration.views).perform
         end
 
       end
