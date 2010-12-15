@@ -18,7 +18,8 @@ describe GOM::Storage::CouchDB::Adapter do
       result
     end
 
-    @pusher = mock GOM::Storage::CouchDB::View::Pusher, :perform => nil
+    @design = mock CouchDB::Design
+    @pusher = mock GOM::Storage::CouchDB::View::Pusher, :perform => nil, :design => @design
     GOM::Storage::CouchDB::View::Pusher.stub(:new).and_return(@pusher)
 
     @adapter = described_class.new @configuration
@@ -71,17 +72,12 @@ describe GOM::Storage::CouchDB::Adapter do
       @revisions = @adapter.send :revisions
       @object_hash = mock Hash
 
-      @fetcher = mock GOM::Storage::CouchDB::Fetcher, :perform => nil, :object_hash => @object_hash
+      @fetcher = mock GOM::Storage::CouchDB::Fetcher, :object_hash => @object_hash
       GOM::Storage::CouchDB::Fetcher.stub(:new).and_return(@fetcher)
     end
 
     it "should initialize the fetcher" do
       GOM::Storage::CouchDB::Fetcher.should_receive(:new).with(@database, @id, @revisions).and_return(@fetcher)
-      @adapter.fetch @id
-    end
-
-    it "should perform a fetch" do
-      @fetcher.should_receive(:perform)
       @adapter.fetch @id
     end
 
@@ -140,6 +136,46 @@ describe GOM::Storage::CouchDB::Adapter do
     it "should perform a fetch" do
       @remover.should_receive(:perform)
       @adapter.remove @id
+    end
+
+  end
+
+  describe "collection" do
+
+    before :each do
+      @adapter.setup
+
+      @view = mock CouchDB::Design::View
+      @views = mock Hash, :[] => @view
+      @design.stub(:views).and_return(@views)
+
+      @options = mock Hash
+
+      @fetcher = mock GOM::Storage::CouchDB::Collection::Fetcher
+      GOM::Storage::CouchDB::Collection::Fetcher.stub(:new).and_return(@fetcher)
+
+      @collection = mock GOM::Object::Collection
+      GOM::Object::Collection.stub(:new).and_return(@collection)
+    end
+
+    it "should select the right view" do
+      @views.should_receive(:[]).with("test_view").and_return(@view)
+      @adapter.collection :test_view, @options
+    end
+
+    it "should initialize a collection fetcher" do
+      GOM::Storage::CouchDB::Collection::Fetcher.should_receive(:new).with(@view, @options).and_return(@fetcher)
+      @adapter.collection :test_view, @options
+    end
+
+    it "should initialize a collection with the fetcher" do
+      GOM::Object::Collection.should_receive(:new).with(@fetcher).and_return(@collection)
+      @adapter.collection :test_view, @options
+    end
+
+    it "should return the collection" do
+      collection = @adapter.collection :test_view, @options
+      collection.should == @collection
     end
 
   end

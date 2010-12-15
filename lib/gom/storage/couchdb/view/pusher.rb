@@ -10,6 +10,8 @@ module GOM
         # A helper to push design documents to the CouchDB server.
         class Pusher
 
+          attr_reader :design
+
           def initialize(database, view_hash)
             @database, @view_hash = database, view_hash
           end
@@ -17,6 +19,7 @@ module GOM
           def perform
             initialize_design
             initialize_views
+            push_design
           end
 
           private
@@ -27,8 +30,12 @@ module GOM
 
           def initialize_views
             @view_hash.each do |name, view|
-              initialize_view name, view
+              initialize_view name.to_s, view
             end
+          end
+
+          def push_design
+            @design.save
           end
 
           def initialize_view(name, view)

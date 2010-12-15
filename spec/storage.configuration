@@ -4,3 +4,7 @@ test_storage:
   database: test
   delete_database_if_exists: true
   create_database_if_missing: true
+  views:
+    test_object_class_view:
+      type: class
+      class: Object

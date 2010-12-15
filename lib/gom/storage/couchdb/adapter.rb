@@ -12,13 +12,11 @@ module GOM
           initialize_server
           initialize_database
           setup_database
-          push_views
+          push_design
         end
 
         def fetch(id)
-          fetcher = Fetcher.new @database, id, revisions
-          fetcher.perform
-          fetcher.object_hash
+          Fetcher.new(@database, id, revisions).object_hash
         end
 
         def store(object_hash)
@@ -30,6 +28,12 @@ module GOM
         def remove(id)
           remover = Remover.new @database, id, revisions
           remover.perform
+        end
+
+        def collection(name, options = { })
+          view = @design.views[name.to_s]
+          fetcher = Collection::Fetcher.new view, options
+          GOM::Object::Collection.new fetcher
         end
 
         def revisions
@@ -52,8 +56,10 @@ module GOM
           @database.create_if_missing! if create_database_if_missing
         end
 
-        def push_views
-          View::Pusher.new(@database, configuration.views).perform
+        def push_design
+          pusher = View::Pusher.new @database, configuration.views
+          pusher.perform
+          @design = pusher.design
         end
 
       end

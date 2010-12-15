@@ -15,7 +15,7 @@ describe GOM::Storage::CouchDB::View::Pusher do
   describe "perform" do
 
     before :each do
-      @design = mock CouchDB::Design, :views => mock(CouchDB::Design::ViewsProxy, :<< => nil)
+      @design = mock CouchDB::Design, :views => mock(CouchDB::Design::ViewsProxy, :<< => nil), :save => true
       CouchDB::Design.stub(:new).and_return(@design)
 
       @view = mock CouchDB::Design::View
@@ -51,6 +51,11 @@ describe GOM::Storage::CouchDB::View::Pusher do
     it "should initialize the map reduce view" do
       CouchDB::Design::View.should_receive(:new).once.and_return(@view)
       CouchDB::Design::View.should_receive(:new).with(@design, "test_map_reduce_view", "function(document) { }", "function(key, values) { }").and_return(@view)
+      @pusher.perform
+    end
+
+    it "should push the design document" do
+      @design.should_receive(:save).and_return(true)
       @pusher.perform
     end
 
