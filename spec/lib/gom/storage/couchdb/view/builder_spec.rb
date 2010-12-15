@@ -13,7 +13,6 @@ describe GOM::Storage::CouchDB::View::Builder do
     it "should return a map reduce view that emits all the documents of the given model class" do
       view = @builder.map_reduce_view
       view.should be_instance_of(GOM::Storage::Configuration::View::MapReduce)
-      view.language.should == "javascript"
       view.map.should == "function(document) {\n  if (document['model_class'] == 'Object') {\n    emit(document['_id'], null);\n  }\n}"
       view.reduce.should be_nil
     end

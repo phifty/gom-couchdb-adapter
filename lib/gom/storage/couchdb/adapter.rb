@@ -16,11 +16,11 @@ module GOM
         end
 
         def fetch(id)
-          Fetcher.new(@database, id, revisions).object_hash
+          Fetcher.new(@database, id, revisions).draft
         end
 
-        def store(object_hash)
-          saver = Saver.new @database, object_hash, revisions, configuration.name
+        def store(draft)
+          saver = Saver.new @database, draft, revisions, configuration.name
           saver.perform
           saver.id
         end

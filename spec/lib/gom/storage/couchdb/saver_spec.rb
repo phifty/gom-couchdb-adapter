@@ -4,11 +4,11 @@ describe GOM::Storage::CouchDB::Saver do
 
   before :each do
     @database = mock CouchDB::Database
-    @object_hash = { :id => "test_object_1" }
+    @draft = GOM::Object::Draft.new "test_object_1"
     @revisions = mock Hash, :[]= => nil
     @relation_storage_name = "test_storage"
 
-    @saver = described_class.new @database, @object_hash, @revisions, @relation_storage_name
+    @saver = described_class.new @database, @draft, @revisions, @relation_storage_name
   end
 
   describe "perform" do
@@ -23,10 +23,10 @@ describe GOM::Storage::CouchDB::Saver do
       @saver.perform
     end
 
-    context "object hash with properties" do
+    context "draft with properties" do
 
       before :each do
-        @object_hash.merge! :properties => { :test => "test value" }
+        @draft.properties = { :test => "test value" }
       end
 
       it "should set the properties" do
@@ -36,7 +36,7 @@ describe GOM::Storage::CouchDB::Saver do
 
     end
 
-    context "object hash with relations" do
+    context "draft with relations" do
 
       before :each do
         @related_object = Object.new
@@ -46,7 +46,7 @@ describe GOM::Storage::CouchDB::Saver do
         GOM::Storage.stub(:store)
         GOM::Object.stub(:id).and_return(@related_object_id)
 
-        @object_hash.merge! :relations => { :related_object => @related_object_proxy }
+        @draft.relations = { :related_object => @related_object_proxy }
       end
 
       it "should set the relations" do
@@ -71,9 +71,9 @@ describe GOM::Storage::CouchDB::Saver do
       @saver.perform
     end
 
-    it "should not set the id if not included in the object hash" do
+    it "should not set the id if not included in the draft" do
       @document.should_not_receive(:id=)
-      @object_hash.delete :id
+      @draft.id = nil
       @saver.perform
     end
 

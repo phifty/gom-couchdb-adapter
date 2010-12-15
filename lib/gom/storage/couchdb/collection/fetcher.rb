@@ -7,17 +7,17 @@ module GOM
 
       module Collection
 
-        # Fetches a result-set of a CouchDB view and transfers it in a GOM collection.
+        # Fetches a result-set of a CouchDB view and provides it to a GOM collection.
         class Fetcher < GOM::Storage::Collection::Fetcher
 
           def initialize(view, options)
             @view, @options = view, options
           end
 
-          def object_hashes
+          def drafts
             fetch_collection
-            fetch_object_hashes
-            @object_hashes
+            fetch_drafts
+            @drafts
           end
 
           private
@@ -26,9 +26,9 @@ module GOM
             @collection = @view.collection @options
           end
 
-          def fetch_object_hashes
-            @object_hashes = @collection.documents.map do |document|
-              GOM::Storage::CouchDB::ObjectHash::Builder.new(document).object_hash
+          def fetch_drafts
+            @drafts = @collection.documents.map do |document|
+              GOM::Storage::CouchDB::Draft::Builder.new(document).draft
             end
           end
 

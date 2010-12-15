@@ -5,20 +5,22 @@ module GOM
 
     module CouchDB
 
-      # Fetches a CouchDB document with the given id and returns an object hash.
+      # Fetches a CouchDB document with the given id and returns a draft.
       class Fetcher
 
-        attr_reader :object_hash
+        attr_accessor :database
+        attr_accessor :id
+        attr_accessor :revisions
 
         def initialize(database, id, revisions)
           @database, @id, @revisions = database, id, revisions
         end
 
-        def object_hash
+        def draft
           initialize_document
           load_document
-          build_object_hash
-          @object_hash
+          build_draft
+          @draft
         rescue ::CouchDB::Document::NotFoundError
           nil
         end
@@ -39,8 +41,8 @@ module GOM
           @revisions[@document.id] = @document.rev
         end
 
-        def build_object_hash
-          @object_hash = GOM::Storage::CouchDB::ObjectHash::Builder.new(@document).object_hash
+        def build_draft
+          @draft = GOM::Storage::CouchDB::Draft::Builder.new(@document).draft
         end
 
       end

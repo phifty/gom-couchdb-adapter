@@ -5,13 +5,13 @@ module GOM
 
     module CouchDB
 
-      # Saves the given object hash to a CouchDB document.
+      # Saves the given draft to a CouchDB document.
       class Saver
 
         attr_reader :id
 
-        def initialize(database, object_hash, revisions, relation_storage_name)
-          @database, @object_hash, @revisions, @relation_storage_name = database, object_hash, revisions, relation_storage_name
+        def initialize(database, draft, revisions, relation_storage_name)
+          @database, @draft, @revisions, @relation_storage_name = database, draft, revisions, relation_storage_name
         end
 
         def perform
@@ -26,18 +26,18 @@ module GOM
 
         def initialize_document
           @document = ::CouchDB::Document.new @database
-          @document.id = @object_hash[:id] if @object_hash.has_key?(:id)
-          @document["model_class"] = @object_hash[:class]
+          @document.id = @draft.id if @draft.id
+          @document["model_class"] = @draft.class_name
         end
 
         def set_properties
-          (@object_hash[:properties] || { }).each do |key, value|
+          @draft.properties.each do |key, value|
             @document[key.to_s] = value
           end
         end
 
         def set_relations
-          (@object_hash[:relations] || { }).each do |key, object_proxy|
+          @draft.relations.each do |key, object_proxy|
             id, object = object_proxy.id, object_proxy.object
             @document["#{key}_id"] = if id
                                        id.to_s

@@ -70,9 +70,9 @@ describe GOM::Storage::CouchDB::Adapter do
 
       @id = "test_object_1"
       @revisions = @adapter.send :revisions
-      @object_hash = mock Hash
+      @draft = mock GOM::Object::Draft
 
-      @fetcher = mock GOM::Storage::CouchDB::Fetcher, :object_hash => @object_hash
+      @fetcher = mock GOM::Storage::CouchDB::Fetcher, :draft => @draft
       GOM::Storage::CouchDB::Fetcher.stub(:new).and_return(@fetcher)
     end
 
@@ -81,8 +81,8 @@ describe GOM::Storage::CouchDB::Adapter do
       @adapter.fetch @id
     end
 
-    it "should return the object_hash" do
-      @adapter.fetch(@id).should == @object_hash
+    it "should return the draft" do
+      @adapter.fetch(@id).should == @draft
     end
 
   end
@@ -92,7 +92,7 @@ describe GOM::Storage::CouchDB::Adapter do
     before :each do
       @adapter.setup
 
-      @object_hash = mock Hash
+      @draft = mock GOM::Object::Draft
       @revisions = @adapter.send :revisions
       @id = "test_object_1"
 
@@ -101,17 +101,17 @@ describe GOM::Storage::CouchDB::Adapter do
     end
 
     it "should initialize the saver" do
-      GOM::Storage::CouchDB::Saver.should_receive(:new).with(@database, @object_hash, @revisions, "test_storage").and_return(@saver)
-      @adapter.store @object_hash
+      GOM::Storage::CouchDB::Saver.should_receive(:new).with(@database, @draft, @revisions, "test_storage").and_return(@saver)
+      @adapter.store @draft
     end
 
     it "should perform a fetch" do
       @saver.should_receive(:perform)
-      @adapter.store @object_hash
+      @adapter.store @draft
     end
 
-    it "should return the object_hash" do
-      @adapter.store(@object_hash).should == @id
+    it "should return the draft" do
+      @adapter.store(@draft).should == @id
     end
 
   end

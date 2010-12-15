@@ -6,7 +6,7 @@ describe GOM::Storage::CouchDB::View::Pusher do
     @database = mock CouchDB::Database
 
     @class_view = GOM::Storage::Configuration::View::Class.new "Object"
-    @map_reduce_view = GOM::Storage::Configuration::View::MapReduce.new "javascript", "function(document) { }", "function(key, values) { }"
+    @map_reduce_view = GOM::Storage::Configuration::View::MapReduce.new "function(document) { }", "function(key, values) { }"
     @view_hash = { "test_class_view" => @class_view, "test_map_reduce_view" => @map_reduce_view }
 
     @pusher = described_class.new @database, @view_hash
@@ -22,7 +22,7 @@ describe GOM::Storage::CouchDB::View::Pusher do
       CouchDB::Design::View.stub(:new).and_return(@view)
 
       @class_map_reduce_view = mock GOM::Storage::Configuration::View::MapReduce,
-        :language => "javascript", :map => "function(document) { }", :reduce => nil
+        :map => "function(document) { }", :reduce => nil
       @builder = mock GOM::Storage::CouchDB::View::Builder, :map_reduce_view => @class_map_reduce_view
       GOM::Storage::CouchDB::View::Builder.stub(:new).and_return(@builder)
     end

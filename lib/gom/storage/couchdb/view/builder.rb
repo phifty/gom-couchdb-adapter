@@ -16,7 +16,6 @@ module GOM
 
           def map_reduce_view
             GOM::Storage::Configuration::View::MapReduce.new(
-              "javascript",
               "function(document) {\n  if (document['model_class'] == '#{@class_view.class_name}') {\n    emit(document['_id'], null);\n  }\n}",
               nil
             )
