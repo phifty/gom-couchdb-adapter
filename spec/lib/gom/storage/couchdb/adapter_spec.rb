@@ -163,6 +163,13 @@ describe GOM::Storage::CouchDB::Adapter do
       @adapter.collection :test_view, @options
     end
 
+    it "should raise #{described_class::ViewNotFoundError} if the view name is invalid" do
+      @views.stub(:[]).and_return(nil)
+      lambda do
+        @adapter.collection :test_view, @options
+      end.should raise_error(described_class::ViewNotFoundError)
+    end
+
     it "should initialize a collection fetcher" do
       GOM::Storage::CouchDB::Collection::Fetcher.should_receive(:new).with(@view, @options).and_return(@fetcher)
       @adapter.collection :test_view, @options

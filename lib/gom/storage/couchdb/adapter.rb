@@ -5,8 +5,11 @@ module GOM
 
     module CouchDB
 
-      # The couchdb storage adapter
+      # The couchdb storage adapter.
       class Adapter < GOM::Storage::Adapter
+
+        # If a view could not be found, this error is raised.
+        class ViewNotFoundError < StandardError; end
 
         def setup
           initialize_server
@@ -32,6 +35,7 @@ module GOM
 
         def collection(name, options = { })
           view = @design.views[name.to_s]
+          raise ViewNotFoundError, "there are no view with the name #{name}" unless view
           fetcher = Collection::Fetcher.new view, options
           GOM::Object::Collection.new fetcher
         end

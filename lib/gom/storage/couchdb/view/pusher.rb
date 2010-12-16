@@ -18,7 +18,7 @@ module GOM
 
           def perform
             initialize_design
-            initialize_views
+            add_views
             push_design
           end
 
@@ -28,9 +28,9 @@ module GOM
             @design = ::CouchDB::Design.new @database, "gom"
           end
 
-          def initialize_views
+          def add_views
             @view_hash.each do |name, view|
-              initialize_view name.to_s, view
+              add_view name.to_s, view
             end
           end
 
@@ -38,7 +38,7 @@ module GOM
             @design.save
           end
 
-          def initialize_view(name, view)
+          def add_view(name, view)
             case view.class.to_s
               when "GOM::Storage::Configuration::View::Class"
                 add_view_by_class_view name, view
