@@ -8,11 +8,23 @@ test_storage:
     test_object_class_view:
       type: class
       class: Object
+    test_map_view:
+      type: map_reduce
+      map:
+        function(document) {
+          if (document['number'] == 11) {
+            emit(document['_id'], null);
+          }
+        }
     test_map_reduce_view:
       type: map_reduce
       map:
         function(document) {
-            if (document['number'] == 11) {
-                emit(document['_id'], null);
-            }
+          if (document['number']) {
+            emit(document['_id'], document['number']);
+          }
+        }
+      reduce:
+        function(keys, values, rereduce) {
+          return sum(values);
         }
