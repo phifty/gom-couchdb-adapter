@@ -83,6 +83,10 @@ Since lazy loading is supported, the author will just be fetched on the first ac
 
 ... will invoke another fetch of the author's object.
 
+== Views
+
+This adapter currently supports class and map/reduce views. For document see http://github.com/phifty/gom.
+
 == Development
 
 Development has been done test-driven and the code follows at most the Clean Code paradigms. Code smells has been
