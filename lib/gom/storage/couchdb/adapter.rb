@@ -8,9 +8,6 @@ module GOM
       # The couchdb storage adapter.
       class Adapter < GOM::Storage::Adapter
 
-        # If a view could not be found, this error is raised.
-        class ViewNotFoundError < StandardError; end
-
         def setup
           initialize_server
           initialize_database
