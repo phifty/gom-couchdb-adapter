@@ -85,7 +85,7 @@ Since lazy loading is supported, the author will just be fetched on the first ac
 
 == Views
 
-This adapter currently supports class and map/reduce views. For document see http://github.com/phifty/gom.
+This adapter currently supports class and map/reduce views. For documentation see http://github.com/phifty/gom.
 
 == Development
 
