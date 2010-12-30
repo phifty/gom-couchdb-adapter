@@ -93,3 +93,8 @@ Development has been done test-driven and the code follows at most the Clean Cod
 removed by using the reek[http://github.com/kevinrutherford/reek] code smell detector.
 
 The project is still experimental and under development. Any bug report and contribution is welcome!
+
+== Support
+
+Apart from contribution, support via Flattr[http://flattr.com/thing/108997/Generic-Object-Mapper-CouchDB-adapter]
+is welcome.
