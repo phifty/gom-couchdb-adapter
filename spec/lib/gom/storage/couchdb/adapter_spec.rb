@@ -63,6 +63,26 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
+  describe "teardown" do
+
+    before :each do
+      @adapter.setup
+    end
+
+    it "should clear the server" do
+      lambda do
+        @adapter.teardown
+      end.should change(@adapter, :server).from(@server).to(nil)
+    end
+
+    it "should clear the database" do
+      lambda do
+        @adapter.teardown
+      end.should change(@adapter, :database).from(@database).to(nil)
+    end
+
+  end
+
   describe "fetch" do
 
     before :each do

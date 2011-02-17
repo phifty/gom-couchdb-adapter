@@ -8,11 +8,19 @@ module GOM
       # The couchdb storage adapter.
       class Adapter < GOM::Storage::Adapter
 
+        attr_reader :server
+        attr_reader :database
+
         def setup
           initialize_server
           initialize_database
           setup_database
           push_design
+        end
+
+        def teardown
+          clear_server
+          clear_database
         end
 
         def fetch(id)
@@ -47,10 +55,18 @@ module GOM
           @server = ::CouchDB::Server.new *configuration.values_at(:host, :port).compact
         end
 
+        def clear_server
+          @server = nil
+        end
+
         def initialize_database
           @database = ::CouchDB::Database.new *[ @server, configuration[:database] ].compact
         end
 
+        def clear_database
+          @database = nil
+        end
+        
         def setup_database
           delete_database_if_exists, create_database_if_missing = configuration.values_at :delete_database_if_exists, :create_database_if_missing
           @database.delete_if_exists! if delete_database_if_exists
