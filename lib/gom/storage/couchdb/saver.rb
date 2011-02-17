@@ -20,7 +20,8 @@ class GOM::Storage::CouchDB::Saver
 
   def initialize_document
     @document = ::CouchDB::Document.new @database
-    @document.id = @draft.id if @draft.id
+    draft_id = @draft.id
+    @document.id = draft_id if draft_id
     @document["model_class"] = @draft.class_name
   end
 
