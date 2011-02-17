@@ -7,7 +7,7 @@ test_storage:
   views:
     test_object_class_view:
       type: class
-      class: Object
+      class: GOM::Spec::Object
     test_map_view:
       type: map_reduce
       map:
