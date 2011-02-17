@@ -1,18 +1,6 @@
 
-module GOM
+module GOM::Storage::CouchDB::Collection
 
-  module Storage
-
-    module CouchDB
-
-      module Collection
-
-        autoload :Fetcher, File.join(File.dirname(__FILE__), "collection", "fetcher")
-
-      end
-
-    end
-
-  end
+  autoload :Fetcher, File.join(File.dirname(__FILE__), "collection", "fetcher")
 
 end
