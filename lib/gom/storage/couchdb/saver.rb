@@ -2,10 +2,10 @@
 # Saves the given draft to a CouchDB document.
 class GOM::Storage::CouchDB::Saver
 
-  attr_reader :id
+  attr_reader :object_id
 
-  def initialize(database, draft, revisions, relation_storage_name)
-    @database, @draft, @revisions, @relation_storage_name = database, draft, revisions, relation_storage_name
+  def initialize(database, draft, revisions, storage_name)
+    @database, @draft, @revisions, @storage_name = database, draft, revisions, storage_name
   end
 
   def perform
@@ -20,8 +20,8 @@ class GOM::Storage::CouchDB::Saver
 
   def initialize_document
     @document = ::CouchDB::Document.new @database
-    draft_id = @draft.id
-    @document.id = draft_id if draft_id
+    object_id = @draft.object_id
+    @document.id = object_id if object_id
     @document["model_class"] = @draft.class_name
   end
 
@@ -37,7 +37,7 @@ class GOM::Storage::CouchDB::Saver
       @document["#{key}_id"] = if id
                                  id.to_s
                                else
-                                 GOM::Storage.store object, @relation_storage_name
+                                 GOM::Storage.store object, @storage_name
                                  GOM::Object.id object
                                end
     end
@@ -45,7 +45,7 @@ class GOM::Storage::CouchDB::Saver
 
   def save_document
     @document.save
-    @id = @document.id
+    @object_id = @document.id
   end
 
   def store_revision

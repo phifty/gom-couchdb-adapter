@@ -10,9 +10,9 @@ describe GOM::Storage::CouchDB::Draft::Builder do
 
   describe "draft" do
 
-    it "should set the id" do
+    it "should set the object id" do
       draft = @builder.draft
-      draft.id.should == "test_document_1"
+      draft.object_id.should == "test_document_1"
     end
 
     it "should set the class" do

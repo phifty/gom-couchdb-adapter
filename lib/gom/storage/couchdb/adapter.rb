@@ -24,7 +24,7 @@ class GOM::Storage::CouchDB::Adapter < GOM::Storage::Adapter
   def store(draft)
     saver = GOM::Storage::CouchDB::Saver.new @database, draft, revisions, configuration.name
     saver.perform
-    saver.id
+    saver.object_id
   end
 
   def remove(id)
@@ -36,7 +36,7 @@ class GOM::Storage::CouchDB::Adapter < GOM::Storage::Adapter
     view = @design.views[name.to_s]
     raise ViewNotFoundError, "there are no view with the name #{name}" unless view
     fetcher = GOM::Storage::CouchDB::Collection::Fetcher.new view, options
-    GOM::Object::Collection.new fetcher
+    GOM::Object::Collection.new fetcher, configuration.name
   end
 
   def revisions

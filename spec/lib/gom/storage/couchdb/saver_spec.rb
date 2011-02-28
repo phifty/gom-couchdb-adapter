@@ -4,17 +4,17 @@ describe GOM::Storage::CouchDB::Saver do
 
   before :each do
     @database = mock CouchDB::Database
-    @draft = GOM::Object::Draft.new "test_object_1"
+    @draft = GOM::Object::Draft.new "object_1"
     @revisions = mock Hash, :[]= => nil
-    @relation_storage_name = "test_storage"
+    @storage_name = "test_storage"
 
-    @saver = described_class.new @database, @draft, @revisions, @relation_storage_name
+    @saver = described_class.new @database, @draft, @revisions, @storage_name
   end
 
   describe "perform" do
 
     before :each do
-      @document = mock CouchDB::Document, :[]= => nil, :id= => nil, :save => true, :id => "test_object_1", :rev => 1
+      @document = mock CouchDB::Document, :[]= => nil, :id= => nil, :save => true, :id => "object_1", :rev => 1
       CouchDB::Document.stub(:new).and_return(@document)
     end
 
@@ -40,7 +40,7 @@ describe GOM::Storage::CouchDB::Saver do
 
       before :each do
         @related_object = Object.new
-        @related_object_id = mock GOM::Object::Id, :to_s => "test_storage:test_object_2"
+        @related_object_id = mock GOM::Object::Id, :to_s => "test_storage:object_2"
         @related_object_proxy = mock GOM::Object::Proxy, :id => @related_object_id, :object => @related_object
 
         GOM::Storage.stub(:store)
@@ -50,7 +50,7 @@ describe GOM::Storage::CouchDB::Saver do
       end
 
       it "should set the relations" do
-        @document.should_receive(:[]=).with("related_object_id", "test_storage:test_object_2")
+        @document.should_receive(:[]=).with("related_object_id", "test_storage:object_2")
         @saver.perform
       end
 
@@ -67,13 +67,13 @@ describe GOM::Storage::CouchDB::Saver do
     end
 
     it "should set the id" do
-      @document.should_receive(:id=).with("test_object_1")
+      @document.should_receive(:id=).with("object_1")
       @saver.perform
     end
 
     it "should not set the id if not included in the draft" do
       @document.should_not_receive(:id=)
-      @draft.id = nil
+      @draft.object_id = nil
       @saver.perform
     end
 
@@ -83,13 +83,13 @@ describe GOM::Storage::CouchDB::Saver do
     end
 
     it "should store the revision" do
-      @revisions.should_receive(:[]=).with("test_object_1", 1)
+      @revisions.should_receive(:[]=).with("object_1", 1)
       @saver.perform
     end
 
     it "should return the (new) object id" do
       @saver.perform
-      @saver.id.should == "test_object_1"
+      @saver.object_id.should == "object_1"
     end
 
   end

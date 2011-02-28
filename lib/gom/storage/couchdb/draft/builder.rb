@@ -8,7 +8,7 @@ class GOM::Storage::CouchDB::Draft::Builder
 
   def draft
     initialize_draft
-    set_id
+    set_object_id
     set_class
     set_properties_and_relations
     @draft
@@ -20,8 +20,8 @@ class GOM::Storage::CouchDB::Draft::Builder
     @draft = GOM::Object::Draft.new
   end
 
-  def set_id
-    @draft.id = @document.id
+  def set_object_id
+    @draft.object_id = @document.id
   end
 
   def set_class
@@ -50,7 +50,7 @@ class GOM::Storage::CouchDB::Draft::Builder
   end
 
   def relation_key?(key)
-    key =~ /.+_id$/
+    !!(key =~ /.+_id$/)
   end
 
 end

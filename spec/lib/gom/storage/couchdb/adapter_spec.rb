@@ -114,9 +114,9 @@ describe GOM::Storage::CouchDB::Adapter do
 
       @draft = mock GOM::Object::Draft
       @revisions = @adapter.send :revisions
-      @id = "test_object_1"
+      @object_id = "object_1"
 
-      @saver = mock GOM::Storage::CouchDB::Saver, :perform => nil, :id => @id
+      @saver = mock GOM::Storage::CouchDB::Saver, :perform => nil, :object_id => @object_id
       GOM::Storage::CouchDB::Saver.stub(:new).and_return(@saver)
     end
 
@@ -131,7 +131,7 @@ describe GOM::Storage::CouchDB::Adapter do
     end
 
     it "should return the draft" do
-      @adapter.store(@draft).should == @id
+      @adapter.store(@draft).should == @object_id
     end
 
   end
@@ -196,7 +196,7 @@ describe GOM::Storage::CouchDB::Adapter do
     end
 
     it "should initialize a collection with the fetcher" do
-      GOM::Object::Collection.should_receive(:new).with(@fetcher).and_return(@collection)
+      GOM::Object::Collection.should_receive(:new).with(@fetcher, "test_storage").and_return(@collection)
       @adapter.collection :test_view, @options
     end
 
