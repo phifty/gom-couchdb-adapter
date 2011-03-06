@@ -5,7 +5,7 @@ describe GOM::Storage::CouchDB::Saver do
   before :each do
     @database = mock CouchDB::Database
     @draft = GOM::Object::Draft.new "object_1"
-    @revisions = mock Hash, :[]= => nil
+    @revisions = { "object_1" => 1 }
     @storage_name = "test_storage"
 
     @saver = described_class.new @database, @draft, @revisions, @storage_name
@@ -14,13 +14,45 @@ describe GOM::Storage::CouchDB::Saver do
   describe "perform" do
 
     before :each do
-      @document = mock CouchDB::Document, :[]= => nil, :id= => nil, :save => true, :id => "object_1", :rev => 1
+      @document = mock CouchDB::Document, :[]= => nil, :id= => nil, :save => true, :id => "object_1", :rev => 2, :rev= => nil
       CouchDB::Document.stub(:new).and_return(@document)
     end
 
     it "should initialize a document" do
       CouchDB::Document.should_receive(:new).with(@database).and_return(@document)
       @saver.perform
+    end
+
+    it "should set the id" do
+      @document.should_receive(:id=).with("object_1")
+      @saver.perform
+    end
+
+    it "should set the revision" do
+      @document.should_receive(:rev=).with(1)
+      @saver.perform
+    end
+
+    it "should not set the id or revision if not included in the draft" do
+      @document.should_not_receive(:id=)
+      @document.should_not_receive(:rev=)
+      @draft.object_id = nil
+      @saver.perform
+    end
+
+    it "should save the document" do
+      @document.should_receive(:save).and_return(true)
+      @saver.perform
+    end
+
+    it "should store the revision" do
+      @saver.perform
+      @revisions.should == { "object_1" => 2 }
+    end
+
+    it "should return the (new) object id" do
+      @saver.perform
+      @saver.object_id.should == "object_1"
     end
 
     context "draft with properties" do
@@ -64,32 +96,6 @@ describe GOM::Storage::CouchDB::Saver do
         @saver.perform
       end
 
-    end
-
-    it "should set the id" do
-      @document.should_receive(:id=).with("object_1")
-      @saver.perform
-    end
-
-    it "should not set the id if not included in the draft" do
-      @document.should_not_receive(:id=)
-      @draft.object_id = nil
-      @saver.perform
-    end
-
-    it "should save the document" do
-      @document.should_receive(:save).and_return(true)
-      @saver.perform
-    end
-
-    it "should store the revision" do
-      @revisions.should_receive(:[]=).with("object_1", 1)
-      @saver.perform
-    end
-
-    it "should return the (new) object id" do
-      @saver.perform
-      @saver.object_id.should == "object_1"
     end
 
   end

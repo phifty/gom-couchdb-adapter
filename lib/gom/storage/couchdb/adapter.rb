@@ -28,8 +28,11 @@ class GOM::Storage::CouchDB::Adapter < GOM::Storage::Adapter
   end
 
   def remove(id)
-    remover = GOM::Storage::CouchDB::Remover.new @database, id, revisions
-    remover.perform
+    GOM::Storage::CouchDB::Remover.new(@database, id, revisions).perform
+  end
+
+  def count
+    GOM::Storage::CouchDB::Counter.new(@database).perform
   end
 
   def collection(name, options = { })

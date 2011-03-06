@@ -160,6 +160,32 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
+  describe "count" do
+
+    before :each do
+      @adapter.setup
+
+      @counter = mock GOM::Storage::CouchDB::Counter, :perform => 1
+      GOM::Storage::CouchDB::Counter.stub(:new).and_return(@counter)
+    end
+
+    it "should initialize the counter" do
+      GOM::Storage::CouchDB::Counter.should_receive(:new).with(@database).and_return(@counter)
+      @adapter.count
+    end
+
+    it "should perform a count" do
+      @counter.should_receive(:perform)
+      @adapter.count
+    end
+
+    it "should return the count" do
+      count = @adapter.count
+      count.should == 1
+    end
+
+  end
+
   describe "collection" do
 
     before :each do
