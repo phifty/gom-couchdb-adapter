@@ -18,12 +18,14 @@ If the couchdb adapter is chosen in the storage configuration, the following con
 
 === Example
 
-  storage_name:
-    adapter: couchdb
-    host: another_host
-    database: production_db
-    delete_database_if_exists: false
-    create_database_if_missing: true
+  GOM::Storage.configure {
+    name :storage_name
+    adapter :couchdb
+    host "another_host"
+    database "production_db"
+    delete_database_if_exists false
+    create_database_if_missing true
+  }
 
 == Documents
 
