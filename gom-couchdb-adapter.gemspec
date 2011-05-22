@@ -3,7 +3,7 @@
 Gem::Specification.new do |specification|
   specification.name              = "gom-couchdb-adapter"
   specification.version           = "0.4.1"
-  specification.date              = "2011-05-10"
+  specification.date              = "2011-05-22"
 
   specification.authors           = [ "Philipp Brüll" ]
   specification.email             = "b.phifty@gmail.com"
@@ -21,7 +21,7 @@ Gem::Specification.new do |specification|
   specification.test_files        = Dir["spec/**/*_spec.rb"]
 
   specification.add_dependency "gom", ">= 0.4.0"
-  specification.add_dependency "couchdb", ">= 0.1.2"
+  specification.add_dependency "couchdb", ">= 0.1.3"
 
   specification.add_development_dependency "rspec", ">= 2"
   specification.add_development_dependency "reek", ">= 1.2"
