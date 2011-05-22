@@ -3,21 +3,23 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "..
 describe GOM::Storage::CouchDB::Collection::Fetcher do
 
   before :each do
-    @document = mock CouchDB::Document
+    @document = mock CouchDB::Document, :id => "document_id", :rev => "document_rev"
     @documents = [ @document ]
     @collection = mock CouchDB::Collection, :documents => @documents
     @view = mock CouchDB::Design::View, :reduce => nil, :collection => @collection
     @options = mock Hash
 
+    @revisions = { }
+
     @draft = mock GOM::Object::Draft
 
     @builder = mock GOM::Storage::CouchDB::Draft::Builder, :draft => @draft
-    GOM::Storage::CouchDB::Draft::Builder.stub(:new).and_return(@builder)
+    GOM::Storage::CouchDB::Draft::Builder.stub :new => @builder
 
-    @fetcher = described_class.new @view, @options
+    @fetcher = described_class.new @view, @revisions, @options
   end
 
-  describe "drafts" do
+  describe "#drafts" do
 
     context "with a view that don't has a reduce function" do
 
@@ -31,6 +33,11 @@ describe GOM::Storage::CouchDB::Collection::Fetcher do
         @fetcher.drafts
       end
 
+      it "should set the revisions" do
+        @fetcher.drafts
+        @revisions["document_id"].should == "document_rev"
+      end
+
       it "should return an array of drafts" do
         drafts = @fetcher.drafts
         drafts.should == [ @draft ]
@@ -41,7 +48,7 @@ describe GOM::Storage::CouchDB::Collection::Fetcher do
     context "with a view that has a reduce function" do
 
       before :each do
-        @view.stub(:reduce).and_return(:test_reduce_function)
+        @view.stub :reduce => :test_reduce_function
       end
 
       it "should return nil" do
@@ -53,7 +60,7 @@ describe GOM::Storage::CouchDB::Collection::Fetcher do
 
   end
 
-  describe "rows" do
+  describe "#rows" do
 
     it "should return the original couchdb collection" do
       rows = @fetcher.rows

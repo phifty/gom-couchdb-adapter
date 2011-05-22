@@ -2,8 +2,8 @@
 # Fetches a result-set of a CouchDB view and provides it to a GOM collection.
 class GOM::Storage::CouchDB::Collection::Fetcher
 
-  def initialize(view, options)
-    @view, @options = view, options
+  def initialize(view, revisions, options)
+    @view, @revisions, @options = view, revisions, options
   end
 
   def drafts
@@ -26,8 +26,13 @@ class GOM::Storage::CouchDB::Collection::Fetcher
 
   def fetch_drafts
     @drafts = @collection.documents.map do |document|
+      set_revision document
       GOM::Storage::CouchDB::Draft::Builder.new(document).draft
     end
+  end
+
+  def set_revision(document)
+    @revisions[document.id] = document.rev
   end
 
 end

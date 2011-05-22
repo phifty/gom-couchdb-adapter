@@ -4,14 +4,14 @@ describe GOM::Storage::CouchDB::Adapter do
 
   before :each do
     @server = mock CouchDB::Server
-    CouchDB::Server.stub(:new).and_return(@server)
+    CouchDB::Server.stub :new => @server
 
     @database = mock CouchDB::Database, :delete_if_exists! => nil, :create_if_missing! => nil
-    CouchDB::Database.stub(:new).and_return(@database)
+    CouchDB::Database.stub :new => @database
 
     @configuration = mock GOM::Storage::Configuration, :name => "test_storage", :views => :test_views
     @configuration.stub(:[]).with(:database).and_return("test")
-    @configuration.stub(:values_at) do |*arguments|
+    @configuration.stub :values_at do |*arguments|
       result = nil
       result = [ "host", 1234 ] if arguments == [ :host, :port ]
       result = [ true, true ] if arguments == [ :delete_database_if_exists, :create_database_if_missing ]
@@ -20,7 +20,7 @@ describe GOM::Storage::CouchDB::Adapter do
 
     @design = mock CouchDB::Design
     @pusher = mock GOM::Storage::CouchDB::View::Pusher, :perform => nil, :design => @design
-    GOM::Storage::CouchDB::View::Pusher.stub(:new).and_return(@pusher)
+    GOM::Storage::CouchDB::View::Pusher.stub :new => @pusher
 
     @adapter = described_class.new @configuration
   end
@@ -29,7 +29,7 @@ describe GOM::Storage::CouchDB::Adapter do
     GOM::Storage::Adapter[:couchdb].should == GOM::Storage::CouchDB::Adapter
   end
 
-  describe "setup" do
+  describe "#setup" do
 
     it "should initialize a server" do
       CouchDB::Server.should_receive(:new).with("host", 1234).and_return(@server)
@@ -63,7 +63,7 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
-  describe "teardown" do
+  describe "#teardown" do
 
     before :each do
       @adapter.setup
@@ -83,7 +83,7 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
-  describe "fetch" do
+  describe "#fetch" do
 
     before :each do
       @adapter.setup
@@ -93,7 +93,7 @@ describe GOM::Storage::CouchDB::Adapter do
       @draft = mock GOM::Object::Draft
 
       @fetcher = mock GOM::Storage::CouchDB::Fetcher, :draft => @draft
-      GOM::Storage::CouchDB::Fetcher.stub(:new).and_return(@fetcher)
+      GOM::Storage::CouchDB::Fetcher.stub :new => @fetcher
     end
 
     it "should initialize the fetcher" do
@@ -107,7 +107,7 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
-  describe "store" do
+  describe "#store" do
 
     before :each do
       @adapter.setup
@@ -117,7 +117,7 @@ describe GOM::Storage::CouchDB::Adapter do
       @object_id = "object_1"
 
       @saver = mock GOM::Storage::CouchDB::Saver, :perform => nil, :object_id => @object_id
-      GOM::Storage::CouchDB::Saver.stub(:new).and_return(@saver)
+      GOM::Storage::CouchDB::Saver.stub :new => @saver
     end
 
     it "should initialize the saver" do
@@ -136,7 +136,7 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
-  describe "remove" do
+  describe "#remove" do
 
     before :each do
       @adapter.setup
@@ -145,7 +145,7 @@ describe GOM::Storage::CouchDB::Adapter do
       @revisions = @adapter.send :revisions
 
       @remover = mock GOM::Storage::CouchDB::Remover, :perform => nil
-      GOM::Storage::CouchDB::Remover.stub(:new).and_return(@remover)
+      GOM::Storage::CouchDB::Remover.stub :new => @remover
     end
 
     it "should initialize the remover" do
@@ -160,13 +160,13 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
-  describe "count" do
+  describe "#count" do
 
     before :each do
       @adapter.setup
 
       @counter = mock GOM::Storage::CouchDB::Counter, :perform => 1
-      GOM::Storage::CouchDB::Counter.stub(:new).and_return(@counter)
+      GOM::Storage::CouchDB::Counter.stub :new => @counter
     end
 
     it "should initialize the counter" do
@@ -186,22 +186,22 @@ describe GOM::Storage::CouchDB::Adapter do
 
   end
 
-  describe "collection" do
+  describe "#collection" do
 
     before :each do
       @adapter.setup
 
       @view = mock CouchDB::Design::View
       @views = mock Hash, :[] => @view
-      @design.stub(:views).and_return(@views)
+      @design.stub :views => @views
 
       @options = mock Hash
 
       @fetcher = mock GOM::Storage::CouchDB::Collection::Fetcher
-      GOM::Storage::CouchDB::Collection::Fetcher.stub(:new).and_return(@fetcher)
+      GOM::Storage::CouchDB::Collection::Fetcher.stub :new => @fetcher
 
       @collection = mock GOM::Object::Collection
-      GOM::Object::Collection.stub(:new).and_return(@collection)
+      GOM::Object::Collection.stub :new => @collection
     end
 
     it "should select the right view" do
@@ -210,14 +210,14 @@ describe GOM::Storage::CouchDB::Adapter do
     end
 
     it "should raise #{described_class::ViewNotFoundError} if the view name is invalid" do
-      @views.stub(:[]).and_return(nil)
+      @views.stub :[] => nil
       lambda do
         @adapter.collection :test_view, @options
       end.should raise_error(described_class::ViewNotFoundError)
     end
 
     it "should initialize a collection fetcher" do
-      GOM::Storage::CouchDB::Collection::Fetcher.should_receive(:new).with(@view, @options).and_return(@fetcher)
+      GOM::Storage::CouchDB::Collection::Fetcher.should_receive(:new).with(@view, @adapter.revisions, @options).and_return(@fetcher)
       @adapter.collection :test_view, @options
     end
 
@@ -229,6 +229,19 @@ describe GOM::Storage::CouchDB::Adapter do
     it "should return the collection" do
       collection = @adapter.collection :test_view, @options
       collection.should == @collection
+    end
+
+  end
+
+  describe "#clear_revisions" do
+
+    before :each do
+      @adapter.revisions[:test] = "value"
+    end
+
+    it "should clear the revisions hash" do
+      @adapter.clear_revisions!
+      @adapter.revisions.should be_empty
     end
 
   end
