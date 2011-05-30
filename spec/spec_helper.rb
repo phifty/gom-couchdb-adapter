@@ -15,12 +15,12 @@ GOM::Storage.configure {
     create_database_if_missing true
     view {
       name :test_object_class_view
-      type :class
+      kind :class
       model_class GOM::Spec::Object
     }
     view {
       name :test_map_view
-      type :map_reduce
+      kind :map_reduce
       map_function """
         function(document) {
           if (document['number'] == 11) {
@@ -31,7 +31,7 @@ GOM::Storage.configure {
     }
     view {
       name :test_map_reduce_view
-      type :map_reduce
+      kind :map_reduce
       map_function """
         function(document) {
           if (document['number']) {
