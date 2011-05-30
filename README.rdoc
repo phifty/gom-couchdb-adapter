@@ -4,6 +4,8 @@
 The CouchDB adapter for the Generic Object Mapper (http://github.com/phifty/gom) provides an easy way store and fetch
 object data to/from a CouchDB server. Object properties are mapped as well as object relations.
 
+http://travis-ci.org/phifty/gom-couchdb-adapter.png
+
 == Configuration
 
 If the couchdb adapter is chosen in the storage configuration, the following configuration values should be specified.
