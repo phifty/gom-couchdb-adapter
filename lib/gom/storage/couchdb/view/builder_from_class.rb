@@ -1,6 +1,6 @@
 
 # Builds a javascript map-reduce-view out of a class view.
-class GOM::Storage::CouchDB::View::Builder
+class GOM::Storage::CouchDB::View::BuilderFromClass
 
   def initialize(class_view)
     @class_view = class_view

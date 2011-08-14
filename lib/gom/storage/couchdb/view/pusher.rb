@@ -32,6 +32,8 @@ class GOM::Storage::CouchDB::View::Pusher
 
   def add_view(name, view)
     case view.class.to_s
+      when "GOM::Storage::Configuration::View::Property"
+        add_view_by_property_view name, view
       when "GOM::Storage::Configuration::View::Class"
         add_view_by_class_view name, view
       when "GOM::Storage::Configuration::View::MapReduce"
@@ -39,8 +41,13 @@ class GOM::Storage::CouchDB::View::Pusher
     end
   end
 
+  def add_view_by_property_view(name, property_view)
+    map_reduce_view = GOM::Storage::CouchDB::View::BuilderFromProperty.new(property_view).map_reduce_view
+    @design.views << ::CouchDB::Design::View.new(@design, name, map_reduce_view.map, map_reduce_view.reduce)
+  end
+
   def add_view_by_class_view(name, class_view)
-    map_reduce_view = GOM::Storage::CouchDB::View::Builder.new(class_view).map_reduce_view
+    map_reduce_view = GOM::Storage::CouchDB::View::BuilderFromClass.new(class_view).map_reduce_view
     @design.views << ::CouchDB::Design::View.new(@design, name, map_reduce_view.map, map_reduce_view.reduce)
   end
 

@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "..", "..", "..", "spec_helper"))
 
-describe GOM::Storage::CouchDB::View::Builder do
+describe GOM::Storage::CouchDB::View::BuilderFromClass do
 
   before :each do
     @class_view = mock GOM::Storage::Configuration::View::Class, :class_name => "Object"

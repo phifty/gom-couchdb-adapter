@@ -1,7 +1,7 @@
 source :rubygems
 
 gem "rake", "0.9.0"
-gem "gom", ">= 0.4.1"
+gem "gom", ">= 0.4.2"
 gem "couchdb", ">= 0.1.2"
 
 group :development do
