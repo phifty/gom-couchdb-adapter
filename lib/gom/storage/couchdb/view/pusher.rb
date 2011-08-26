@@ -27,6 +27,7 @@ class GOM::Storage::CouchDB::View::Pusher
   end
 
   def push_design
+    @design.fetch_rev
     @design.save
   end
 

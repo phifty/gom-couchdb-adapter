@@ -20,7 +20,7 @@ describe GOM::Storage::CouchDB::View::Pusher do
   describe "perform" do
 
     before :each do
-      @design = mock CouchDB::Design, :views => mock(CouchDB::Design::ViewsProxy, :<< => nil), :save => true
+      @design = mock CouchDB::Design, :views => mock(CouchDB::Design::ViewsProxy, :<< => nil), :fetch_rev => nil, :save => true
       CouchDB::Design.stub :new => @design
 
       @property_view = mock CouchDB::Design::View
