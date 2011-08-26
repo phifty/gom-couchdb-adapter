@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |specification|
   specification.name              = "gom-couchdb-adapter"
-  specification.version           = "0.4.4"
+  specification.version           = "0.4.5"
   specification.date              = "2011-08-26"
 
   specification.authors           = [ "Philipp Brüll" ]
