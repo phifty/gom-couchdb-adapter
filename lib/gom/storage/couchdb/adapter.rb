@@ -53,7 +53,7 @@ class GOM::Storage::CouchDB::Adapter < GOM::Storage::Adapter
   private
 
   def initialize_server
-    @server = ::CouchDB::Server.new *configuration.values_at(:host, :port).compact
+    @server = ::CouchDB::Server.new *configuration.values_at(:host, :port, :username, :password)
   end
 
   def clear_server

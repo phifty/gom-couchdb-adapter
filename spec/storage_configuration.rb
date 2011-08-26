@@ -4,6 +4,8 @@ GOM::Storage.configure {
     name :test_storage
     adapter :couchdb
     database "test"
+    username "test"
+    password "test"
     delete_database_if_exists true
     create_database_if_missing true
     view {

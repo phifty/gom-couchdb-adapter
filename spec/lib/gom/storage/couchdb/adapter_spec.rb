@@ -10,12 +10,16 @@ describe GOM::Storage::CouchDB::Adapter do
     CouchDB::Database.stub :new => @database
 
     @configuration = mock GOM::Storage::Configuration, :name => "test_storage", :views => :test_views
-    @configuration.stub(:[]).with(:database).and_return("test")
+    @configuration.stub :[] do |key|
+      case key
+        when :database then "test"
+      end
+    end
     @configuration.stub :values_at do |*arguments|
-      result = nil
-      result = [ "host", 1234 ] if arguments == [ :host, :port ]
-      result = [ true, true ] if arguments == [ :delete_database_if_exists, :create_database_if_missing ]
-      result
+      case arguments
+        when [ :host, :port, :username, :password ] then [ "host", 1234, "test", "test" ]
+        when [ :delete_database_if_exists, :create_database_if_missing ] then [ true, true ]
+      end
     end
 
     @design = mock CouchDB::Design
@@ -32,7 +36,7 @@ describe GOM::Storage::CouchDB::Adapter do
   describe "#setup" do
 
     it "should initialize a server" do
-      CouchDB::Server.should_receive(:new).with("host", 1234).and_return(@server)
+      CouchDB::Server.should_receive(:new).with("host", 1234, "test", "test").and_return(@server)
       @adapter.setup
     end
 
