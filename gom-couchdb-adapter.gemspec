@@ -11,7 +11,7 @@ Gem::Specification.new do |specification|
   specification.rubyforge_project = "gom-couchdb-adapter"
 
   specification.summary           = "CouchDB storage adapter for the General Object Mapper."
-  specification.description       = "CouchDB storage adapter for the General Object Mapper. Currently, version 1.0 of CouchDB is supported."
+  specification.description       = "CouchDB storage adapter for the General Object Mapper. Current versions of CouchDB are supported."
 
   specification.has_rdoc          = true
   specification.files             = [ "README.rdoc", "LICENSE", "Rakefile" ] + Dir["lib/**/*"] + Dir["spec/**/*"]
