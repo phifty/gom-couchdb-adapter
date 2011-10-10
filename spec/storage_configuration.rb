@@ -9,6 +9,10 @@ GOM::Storage.configure {
     delete_database_if_exists true
     create_database_if_missing true
     view {
+      name :test_all_view
+      kind :all
+    }
+    view {
       name :test_property_view
       kind :property
       filter {
