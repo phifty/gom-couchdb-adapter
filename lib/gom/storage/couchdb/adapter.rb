@@ -37,7 +37,7 @@ class GOM::Storage::CouchDB::Adapter < GOM::Storage::Adapter
 
   def collection(name, options = { })
     view = @design.views[name.to_s]
-    raise ViewNotFoundError, "there are no view with the name #{name}" unless view
+    raise ViewNotFoundError, "there is no view with the name #{name}" unless view
     fetcher = GOM::Storage::CouchDB::Collection::Fetcher.new view, revisions, options
     GOM::Object::Collection.new fetcher, configuration.name
   end
