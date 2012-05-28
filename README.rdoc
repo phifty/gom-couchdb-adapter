@@ -21,12 +21,14 @@ If the couchdb adapter is chosen in the storage configuration, the following con
 === Example
 
   GOM::Storage.configure {
-    name :storage_name
-    adapter :couchdb
-    host "another_host"
-    database "production_db"
-    delete_database_if_exists false
-    create_database_if_missing true
+    storage {
+      name :storage_name
+      adapter :couchdb
+      host "another_host"
+      database "production_db"
+      delete_database_if_exists false
+      create_database_if_missing true
+    }
   }
 
 == Documents
@@ -94,7 +96,7 @@ This adapter currently supports class and map/reduce views. For documentation se
 == Development
 
 Development has been done test-driven and the code follows at most the Clean Code paradigms. Code smells has been
-removed by using the reek[http://github.com/kevinrutherford/reek] code smell detector.
+removed by using the reek[https://github.com/troessner/reek] code smell detector.
 
 The project is still experimental and under development. Any bug report and contribution is welcome!
 
