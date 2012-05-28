@@ -96,7 +96,7 @@ This adapter currently supports class and map/reduce views. For documentation se
 == Development
 
 Development has been done test-driven and the code follows at most the Clean Code paradigms. Code smells has been
-removed by using the reek[http://github.com/kevinrutherford/reek] code smell detector.
+removed by using the reek[https://github.com/troessner/reek] code smell detector.
 
 The project is still experimental and under development. Any bug report and contribution is welcome!
 
